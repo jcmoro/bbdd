@@ -225,4 +225,20 @@ class BlogRepository extends EntityRepository
 
         return $consulta->getResult();
     }
+    
+    public function queryBuscar($medios, $titulo = null, \DateTime $fecha_fin = null)
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->join('s.medio', 'm');
+        $qb->where($qb->expr()->in('s.medio', array_keys($medios)));
+        if ($titulo) {
+            $qb->andWhere('s.titulo LIKE :titulo');
+            $qb->setParameter('titulo', '%'.$titulo.'%');
+        }
+        if ($fecha_fin) {
+            $qb->andWhere('s.fechaFin <= :fecha_fin');
+            $qb->setParameter('fecha_fin', $fecha_fin);
+        }
+        return $qb->getQuery();
+    }
 }
